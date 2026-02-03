@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
@@ -80,6 +80,83 @@ export function Header() {
   if (pathname?.startsWith("/watch")) {
     return null;
   }
+
+  // SEO & Social Meta (client-side injection)
+  // Note: For best results with social previews (OG/Twitter), set server-side meta in app/layout or page-level metadata
+  useEffect(() => {
+    // Prepare values
+    const siteTitle = "Dracin-Luc";
+    const title = platformInfo?.name ? `${siteTitle} — ${platformInfo.name}` : siteTitle;
+    const description = platformInfo?.description || `Temukan drama dan short videos di ${platformInfo?.name || "Dracin"}.`;
+    const image = platformInfo?.ogImage || platformInfo?.logo || "/og-default.png"; // fallbacks
+
+    const setTag = (attrName: string, attrValue: string, content: string) => {
+      let tag = document.querySelector(`meta[${attrName}="${attrValue}"]`);
+      if (!tag) {
+        tag = document.createElement("meta");
+        tag.setAttribute(attrName, attrValue);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute("content", content);
+    };
+
+    // Title
+    document.title = title;
+
+    // Standard description
+    setTag("name", "description", description);
+
+    // Open Graph
+    setTag("property", "og:title", title);
+    setTag("property", "og:description", description);
+    setTag("property", "og:image", image);
+    setTag("property", "og:type", "website");
+    setTag("property", "og:url", window.location.href);
+
+    // Twitter
+    setTag("name", "twitter:card", "summary_large_image");
+    setTag("name", "twitter:title", title);
+    setTag("name", "twitter:description", description);
+    setTag("name", "twitter:image", image);
+
+    // Canonical
+    let linkCanonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!linkCanonical) {
+      linkCanonical = document.createElement("link");
+      linkCanonical.rel = "canonical";
+      document.head.appendChild(linkCanonical);
+    }
+    linkCanonical.href = window.location.href;
+
+    // JSON-LD structured data (Organization + WebSite)
+    const ldId = "dracin-jsonld";
+    let ld = document.getElementById(ldId) as HTMLScriptElement | null;
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": siteTitle,
+      "url": window.location.origin,
+      "description": description,
+      "publisher": {
+        "@type": "Organization",
+        "name": siteTitle,
+        "logo": {
+          "@type": "ImageObject",
+          "url": image,
+        },
+      },
+    };
+    if (!ld) {
+      ld = document.createElement("script");
+      ld.type = "application/ld+json";
+      ld.id = ldId;
+      document.head.appendChild(ld);
+    }
+    ld.text = JSON.stringify(jsonLd);
+
+    // Cleanup is not strictly necessary since meta tags are reused/updated, but we return a no-op
+    return () => {};
+  }, [platformInfo]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-strong">
