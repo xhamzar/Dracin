@@ -1,4 +1,4 @@
-"use client";
+use client;
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -84,12 +84,24 @@ export function Header() {
   // SEO & Social Meta (client-side injection)
   // Note: For best results with social previews (OG/Twitter), set server-side meta in app/layout or page-level metadata
   useEffect(() => {
-    // Prepare values
-    const siteTitle = "Dracin-Luc";
-    const title = platformInfo?.name ? `${siteTitle} — ${platformInfo.name}` : siteTitle;
+    const getPageTitle = () => {
+      const siteTitle = "Dracin-Luc";
+      if (normalizedQuery) {
+        return `${normalizedQuery} — ${platformInfo?.name || siteTitle}`;
+      } else if (platformInfo?.name) {
+        return `${siteTitle} — ${platformInfo.name}`;
+      }
+      return siteTitle;
+    };
+
+    const title = getPageTitle();
+
+    // Title
+    document.title = title;
+
+    // Standard description
     const description = platformInfo?.description || `Temukan drama dan short videos di ${platformInfo?.name || "Dracin"}.`;
     const image = platformInfo?.ogImage || platformInfo?.logo || "/og-default.png"; // fallbacks
-
     const setTag = (attrName: string, attrValue: string, content: string) => {
       let tag = document.querySelector(`meta[${attrName}="${attrValue}"]`);
       if (!tag) {
@@ -99,9 +111,6 @@ export function Header() {
       }
       tag.setAttribute("content", content);
     };
-
-    // Title
-    document.title = title;
 
     // Standard description
     setTag("name", "description", description);
@@ -134,7 +143,7 @@ export function Header() {
     const jsonLd = {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": siteTitle,
+      "name": "Dracin-Luc",
       "url": window.location.origin,
       "description": description,
       "publisher": {
@@ -156,7 +165,7 @@ export function Header() {
 
     // Cleanup is not strictly necessary since meta tags are reused/updated, but we return a no-op
     return () => {};
-  }, [platformInfo]);
+  }, [platformInfo, normalizedQuery]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-strong">
@@ -508,5 +517,4 @@ export function Header() {
           document.body
         )}
     </header>
-  );
 }
