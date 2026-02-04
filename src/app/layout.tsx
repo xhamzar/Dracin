@@ -12,11 +12,19 @@ export const metadata: Metadata = {
   description: "Nonton drama pendek gratis dan tanpa iklan di Dracin-luc.",
 };
 
+// Function to generate metadata dynamically
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const pageTitle = params.slug ? `${params.slug.replace('-', ' ')} - Dracin-luc` : "Dracin-luc - Streaming Drama Pendek";
+
+  return {
+    title: pageTitle,
+    description: "Nonton drama pendek gratis dan tanpa iklan di Dracin-luc.",
+  };
+}
+
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode; }>) {
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
@@ -26,7 +34,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <Providers>
-          <Suspense fallback={<div className="h-16" />}>
+          <Suspense fallback={<div className="h-16" />}> 
             <Header />
           </Suspense>
           {children}
