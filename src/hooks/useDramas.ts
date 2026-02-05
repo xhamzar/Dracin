@@ -1,11 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import type { Drama, SearchResult } from "@/types/drama";
 
-const API_BASE = "/api/dramabox";
-
 import { fetchJson } from "@/lib/fetcher";
 
-// ... existing imports
+const API_BASE = "/api/dramabox";
 
 export function useForYouDramas() {
   return useQuery({

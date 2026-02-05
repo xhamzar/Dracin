@@ -25,7 +25,13 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await safeJson(response);
-    return encryptedResponse(data);
+
+    // Filter out items without bookId or bookName to prevent blank cards
+    const filteredData = Array.isArray(data)
+      ? data.filter((item: any) => item && item.bookId && item.bookName)
+      : [];
+
+    return encryptedResponse(filteredData);
   } catch (error) {
     console.error("API Error:", error);
     return NextResponse.json(

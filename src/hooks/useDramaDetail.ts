@@ -1,11 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DramaDetailResponse, Episode } from "@/types/drama";
 
-const API_BASE = "/api/dramabox";
-
 import { fetchJson } from "@/lib/fetcher";
 
-// ... existing imports
+const API_BASE = "/api/dramabox";
 
 async function fetchDramaDetail(bookId: string): Promise<DramaDetailResponse> {
   return fetchJson<DramaDetailResponse>(`${API_BASE}/detail/${bookId}`);
