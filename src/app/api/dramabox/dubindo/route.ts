@@ -23,10 +23,10 @@ export async function GET(request: NextRequest) {
 
     const data = await safeJson(response);
     
-    // Filter out items without bookId to prevent blank cards
+    // Filter out items without bookId or bookName to prevent blank cards
     // Note: data is directly an array for dubindo
     const filteredData = Array.isArray(data) 
-      ? data.filter((item: any) => item && item.bookId) 
+      ? data.filter((item: any) => item && item.bookId && item.bookName)
       : [];
 
     return encryptedResponse(filteredData);

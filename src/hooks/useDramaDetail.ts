@@ -3,32 +3,16 @@ import type { DramaDetailResponse, Episode } from "@/types/drama";
 
 const API_BASE = "/api/dramabox";
 
-import { decryptData } from "@/lib/crypto";
+import { fetchJson } from "@/lib/fetcher";
 
 // ... existing imports
 
 async function fetchDramaDetail(bookId: string): Promise<DramaDetailResponse> {
-  const response = await fetch(`${API_BASE}/detail/${bookId}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch drama detail");
-  }
-  const json = await response.json();
-  if (json.data && typeof json.data === "string") {
-    return decryptData(json.data);
-  }
-  return json;
+  return fetchJson<DramaDetailResponse>(`${API_BASE}/detail/${bookId}`);
 }
 
 async function fetchAllEpisodes(bookId: string): Promise<Episode[]> {
-  const response = await fetch(`${API_BASE}/allepisode/${bookId}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch episodes");
-  }
-  const json = await response.json();
-  if (json.data && typeof json.data === "string") {
-    return decryptData(json.data);
-  }
-  return json;
+  return fetchJson<Episode[]>(`${API_BASE}/allepisode/${bookId}`);
 }
 
 export function useDramaDetail(bookId: string) {
