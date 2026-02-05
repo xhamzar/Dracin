@@ -19,7 +19,7 @@ export async function GET() {
     
     // Filter out items without bookId or bookName to prevent blank cards
     const filteredData = Array.isArray(data) 
-      ? data.filter((item: any) => item && item.bookId) 
+      ? data.filter((item: any) => item && item.bookId && item.bookName)
       : [];
 
     return encryptedResponse(filteredData);
